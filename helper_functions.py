@@ -112,8 +112,7 @@ def get_pp(df,sourse_of_history, postaja="PREŠERNOV TRG-PETKOVŠKOVO NABREŽJE"
         to_use_mask = to_use_mask & ~np.isnan(dg["timestampminus"+t])
     to_use = dg[to_use_mask]
     pp = to_use
-    
-    ##################33
+
     for t in tss:
         a = "y"+str(t)
         b = "timestampminus"+str(t)
@@ -125,39 +124,10 @@ def get_pp(df,sourse_of_history, postaja="PREŠERNOV TRG-PETKOVŠKOVO NABREŽJE"
     
 
     pp = pp.drop(["timestamp"] + ["timestampminus"+str(t) for t in tss],axis=1)
-    # pp = pp.drop(["timestamp","timestampminus1","timestampminus2"],axis=1)
     X = pp.iloc[:,1:]
-    #X  = preprocessing.normalize(X)
     y = np.array(pp.iloc[:,0])
     return (pp,np.array(X),y)
 
-# def get_pp(df,sourse_of_history, postaja="PREŠERNOV TRG-PETKOVŠKOVO NABREŽJE"):
-#     attrs = [postaja] + [x for x in list(df.columns) if x.islower()]
-#     for x in ["date", "time", "timestamp_round","day_of_week"]:
-#         if x in attrs: attrs.remove(x)
-
-#     dg = df[attrs]
-#     dg.columns = ["y"] + list(dg.columns)[1:]
-    
-#     dj = sourse_of_history[attrs]
-#     dj.columns = dg.columns    
-    
-#     dh = dj[["y","timestamp"]]
-#     dh.columns = ["pred_eno_uro","timestampminus1"]
-    
-#     to_use = dg[~np.isnan(dg["timestampminus1"]) & ~np.isnan(dg["timestampminus2"])]
-    
-#     pp = pd.merge(to_use, dh, on="timestampminus1",
-#                     how = 'left')
-    
-#     dh.columns = ["pred_dvema_urama","timestampminus2"]
-#     pp = pd.merge(pp, dh, on="timestampminus2",
-#                     how = 'left')
-#     pp = pp.drop(["timestamp","timestampminus1","timestampminus2"],axis=1)
-#     X = pp.iloc[:,1:]
-#     #X  = preprocessing.normalize(X)
-#     y = np.array(pp.iloc[:,0])
-#     return (pp,np.array(X),y)
 
 def run(df,dt,clf,inside=True,round=True):
     mse_ = 0
@@ -184,35 +154,3 @@ def run(df,dt,clf,inside=True,round=True):
                 dt[postaja] = y_pred
         
     return dt, mse_
-
-# def gbr(X_train,y_train,X_test):
-#     # clf = GradientBoostingRegressor(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0).fit(X_train, y_train)
-#     clf = GradientBoostingRegressor(random_state=0).fit(X_train, y_train)
-#     y_pred = clf.predict(X_test)
-#     return y_pred
-#     # #cross_val_score(clf, X_train, y_train, cv=5)
-#     # print(y_pred)
-#     # mse = mean_squared_error(y_test,y_pred)
-#     # print(mse)
-
-# def run(df,dt,inside=True,round=True):
-#     postaje = [x for x in list(df.columns) if x.isupper()]
-#     for postaja in postaje:
-#         print(postaja)
-#         if inside:
-#             _,X,y = get_pp(df,df,postaja)
-#             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=2)
-#         else:
-#             _,X_train,y_train = get_pp(df,df,postaja)
-#             _,X_test,y_test = get_pp(dt,df,postaja)
-#         y_pred = gbr(X_train,y_train,X_test)
-#         if inside:
-#             mse = mean_squared_error(y_test,y_pred)
-#             print(mse)
-#         else:
-#             if round:
-#                 dt[postaja] = np.round(y_pred)
-#             else:
-#                 dt[postaja] = y_pred
-        
-#     return dt
